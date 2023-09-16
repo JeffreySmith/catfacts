@@ -1,3 +1,4 @@
+#![warn(clippy::all,clippy::pedantic)]
 use serde::{Deserialize,Serialize};
 use argh::FromArgs;
 
@@ -7,7 +8,9 @@ struct Args{
     ///max length of cat fact
     #[argh(option)]
     length:Option<i32>,
-
+    ///number of facts you want
+    #[argh(option)]
+    facts:Option<i32>
 }
 
 #[derive(Serialize,Deserialize,Debug)]
@@ -29,7 +32,7 @@ async fn test_fact(){
 async fn get_fact(client:&reqwest::Client,length:Option<i32>) -> anyhow::Result<Fact>
 {
     let url = match length {
-        Some(len) => format!("https://catfact.ninja/fact?max_length={}",len),
+        Some(len) => format!("https://catfact.ninja/fact?max_length={len}"),
         _ => "https://catfact.ninja/fact".to_string()
     };
     
@@ -49,18 +52,23 @@ async fn get_fact(client:&reqwest::Client,length:Option<i32>) -> anyhow::Result<
     };
     match input{
         Ok(i) => Ok(serde_json::from_str::<Fact>(&i[..])?),
-        Err(e) => return Err(e.into()),
+        Err(e) => Err(e),
     }
 }
 #[tokio::main]
 async fn main() {
     let arg:Args = argh::from_env();
     let client = reqwest::Client::new();
-
+    let number_of_facts = arg.facts.unwrap_or(1);
     
-    let my_fact = get_fact(&client,arg.length).await;
-    match my_fact{
-        Ok(f)=>println!("{}",f.fact),
-        Err(error)=> println!("Error: \n{}",error),
+    for i in 1..=number_of_facts{
+        if number_of_facts > 1 {
+            print!("Fact {i}:\t");
+        }
+        let my_fact = get_fact(&client,arg.length).await;
+        match my_fact{
+            Ok(f)=>println!("{}",f.fact),
+            Err(error)=> println!("Error: \n{error}"),
+        }
     }
 }
