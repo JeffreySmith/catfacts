@@ -2,7 +2,7 @@
 use serde::{Deserialize,Serialize};
 use argh::FromArgs;
 
-#[derive(FromArgs,Debug)]
+#[derive(FromArgs)]
 /// Get a fun cat fact
 struct Args{
     ///max length of cat fact
@@ -18,9 +18,11 @@ struct Fact{
     fact:String,
     length:i32,
 }
+
 #[tokio::test]
 async fn test_fact(){
     let client = reqwest::Client::new();
+    //There's only one 20 or fewer character fact
     let fact = get_fact(&client,Some(20)).await;
     match fact{
         Ok(cat_fact)=>assert_eq!("Cats have 3 eyelids.",cat_fact.fact),
@@ -50,11 +52,13 @@ async fn get_fact(client:&reqwest::Client,length:Option<i32>) -> anyhow::Result<
         },
         Result::Err(e) => Err(e.into())
     };
+    
     match input{
         Ok(i) => Ok(serde_json::from_str::<Fact>(&i[..])?),
         Err(e) => Err(e),
     }
 }
+
 #[tokio::main]
 async fn main() {
     let arg:Args = argh::from_env();
@@ -65,10 +69,11 @@ async fn main() {
         if number_of_facts > 1 {
             print!("Fact {i}:\t");
         }
-        let my_fact = get_fact(&client,arg.length).await;
-        match my_fact{
+
+        let fact = get_fact(&client,arg.length).await;
+        match fact{
             Ok(f)=>println!("{}",f.fact),
             Err(error)=> println!("Error: \n{error}"),
-        }
+        }       
     }
 }
