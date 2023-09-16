@@ -2,11 +2,12 @@
 A silly program to practice accessing api's in rust, using reqwest and tokio.
 This was to learn how to access api's as well as practice using async.
 
-Usage:
+Basic usage to get a fact:
 
-cargo run will get you a fact.
+cargo run
 
-For help, type:
+
+For help and optional arguments, type:
 
 cargo run -- --help
 
