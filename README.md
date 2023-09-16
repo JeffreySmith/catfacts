@@ -1,6 +1,6 @@
 # catfacts
-A silly program to practice accessing api's in rust, using reqwest and tokio.
-This was to learn how to access api's as well as practice using async.
+A silly program to practice accessing api's in rust, using reqwest, tokio, serde, and argh.
+This was also to practice using async.
 
 Basic usage to get a fact:
 
