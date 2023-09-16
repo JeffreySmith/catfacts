@@ -5,7 +5,7 @@ use argh::FromArgs;
 #[derive(FromArgs)]
 /// Get a fun cat fact
 struct Args{
-    ///max length of cat fact
+    ///max number of characters in the cat fact
     #[argh(option)]
     length:Option<i32>,
     ///number of facts you want
